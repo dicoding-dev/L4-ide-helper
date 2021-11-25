@@ -22,7 +22,7 @@
     },
     "require-dev": {
         "doctrine/dbal": "~2.3",
-        "phpunit/phpunit": "~4.0"
+        "phpunit/phpunit": "^9"
     },
     "suggest": {
         "doctrine/dbal": "Load information from the database about models for phpdocs (~2.3)"
