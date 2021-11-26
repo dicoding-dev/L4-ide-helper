@@ -88,9 +88,9 @@ class GeneratorCommand extends Command
 
             $helpers = '';
             if ($this->option('helpers') || ($this->config->get('laravel-ide-helper::include_helpers'))) {
-                foreach ($this->config->get('laravel-ide-helper::helper_files', array()) as $helper) {
+                foreach ($this->config->get('laravel-ide-helper::helper_files', []) as $helper) {
                     if (file_exists($helper)) {
-                        $helpers .= str_replace(array('<?php', '?>'), '', $this->files->get($helper));
+                        $helpers .= str_replace(['<?php', '?>'], '', $this->files->get($helper));
                     }
                 }
             } else {
@@ -114,10 +114,10 @@ class GeneratorCommand extends Command
         //Use a sqlite database in memory, to avoid connection errors on Database facades
         $this->config->set(
             'database.connections.sqlite',
-            array(
+            [
                 'driver' => 'sqlite',
                 'database' => ':memory:',
-            )
+            ]
         );
         $this->config->set('database.default', 'sqlite');
     }
@@ -129,11 +129,11 @@ class GeneratorCommand extends Command
     {
         $filename = $this->config->get('laravel-ide-helper::filename');
 
-        return array(
-            array(
+        return [
+            [
                 'filename', InputArgument::OPTIONAL, 'The path to the helper file', $filename
-            ),
-        );
+            ],
+        ];
     }
 
     /**
@@ -143,12 +143,12 @@ class GeneratorCommand extends Command
     {
         $format = $this->config->get('laravel-ide-helper::format');
 
-        return array(
-            array('format', 'F', InputOption::VALUE_OPTIONAL, 'The format for the IDE Helper', $format),
-            array('helpers', 'H', InputOption::VALUE_NONE, 'Include the helper files'),
-            array('memory', 'M', InputOption::VALUE_NONE, 'Use sqlite memory driver'),
-            array('sublime', 'S', InputOption::VALUE_NONE, 'DEPRECATED: Use different style for SublimeText CodeIntel'),
-        );
+        return [
+            ['format', 'F', InputOption::VALUE_OPTIONAL, 'The format for the IDE Helper', $format],
+            ['helpers', 'H', InputOption::VALUE_NONE, 'Include the helper files'],
+            ['memory', 'M', InputOption::VALUE_NONE, 'Use sqlite memory driver'],
+            ['sublime', 'S', InputOption::VALUE_NONE, 'DEPRECATED: Use different style for SublimeText CodeIntel'],
+        ];
     }
 
 }

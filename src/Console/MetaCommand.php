@@ -38,13 +38,13 @@ class MetaCommand extends Command {
     /** @var \Illuminate\View\Factory */
     protected $view;
 
-    protected $methods = array(
+    protected $methods = [
         //'\Illuminate\Foundation\Application::make',
         'new \Illuminate\Container\Container',
         '\Illuminate\Container\Container::make',
         '\App::make',
         'app',
-    );
+    ];
 
     /**
      * {@inheritdoc}
@@ -87,10 +87,10 @@ class MetaCommand extends Command {
         }
         asort($bindings);
 
-        $content = $this->view->make('laravel-ide-helper::meta', array(
+        $content = $this->view->make('laravel-ide-helper::meta', [
             'bindings' => $bindings,
             'methods' => $this->methods,
-        ))->render();
+        ])->render();
 
         $filename = $this->option('filename');
         $written = $this->files->put($filename, $content);
@@ -132,9 +132,9 @@ class MetaCommand extends Command {
      */
     protected function getOptions()
     {
-        return array(
-            array('filename', 'F', InputOption::VALUE_OPTIONAL, 'The path to the meta file', $this->filename),
-            array('exclude', 'E', InputOption::VALUE_OPTIONAL, 'Laravel bindings to exclude (e.g. "bar.|.foo")'),
-        );
+        return [
+            ['filename', 'F', InputOption::VALUE_OPTIONAL, 'The path to the meta file', $this->filename],
+            ['exclude', 'E', InputOption::VALUE_OPTIONAL, 'Laravel bindings to exclude (e.g. "bar.|.foo")'],
+        ];
     }
 }

@@ -25,9 +25,9 @@ class Generator
     /** @var \Symfony\Component\Console\Output\OutputInterface */
     protected $output;
 
-    protected $extra = array();
-    protected $magic = array();
-    protected $interfaces = array();
+    protected $extra = [];
+    protected $magic = [];
+    protected $interfaces = [];
     protected $helpers;
 
     /**
@@ -84,16 +84,16 @@ class Generator
 
     public function generateJsonHelper()
     {
-        $classes = array();
+        $classes = [];
         foreach ($this->getNamespaces() as $aliases) {
             foreach ($aliases as $alias) {
-                $functions = array();
+                $functions = [];
                 foreach ($alias->getMethods() as $method) {
                     $functions[$method->getName()] = '(' . $method->getParamsWithDefault() . ')';
                 }
-                $classes[$alias->getAlias()] = array(
+                $classes[$alias->getAlias()] = [
                     'functions' => $functions,
-                );
+                ];
             }
         }
 
@@ -102,11 +102,11 @@ class Generator
             $flags |= JSON_PRETTY_PRINT;
         }
 
-        return json_encode(array(
-            'php' => array(
+        return json_encode([
+            'php' => [
                 'classes' => $classes,
-            ),
-        ), $flags);
+            ],
+        ], $flags);
     }
 
     protected function detectDrivers()
@@ -115,7 +115,7 @@ class Generator
             if (class_exists('Auth') && is_a('Auth', '\Illuminate\Support\Facades\Auth', true)) {
                 /** @noinspection PhpUndefinedClassInspection */
                 $class = get_class(\Auth::driver());
-                $this->extra['Auth'] = array($class);
+                $this->extra['Auth'] = [$class];
                 $this->interfaces['\Illuminate\Auth\UserProviderInterface'] = $class;
             }
         } catch (\Exception $e) {}
@@ -124,7 +124,7 @@ class Generator
             if (class_exists('DB') && is_a('DB', '\Illuminate\Support\Facades\DB', true)) {
                 /** @noinspection PhpUndefinedClassInspection */
                 $class = get_class(\DB::connection());
-                $this->extra['DB'] = array($class);
+                $this->extra['DB'] = [$class];
                 $this->interfaces['\Illuminate\Database\ConnectionInterface'] = $class;
             }
         } catch (\Exception $e) {}
@@ -135,7 +135,7 @@ class Generator
                 $driver = get_class(\Cache::driver());
                 /** @noinspection PhpUndefinedClassInspection */
                 $store = get_class(\Cache::getStore());
-                $this->extra['Cache'] = array($driver, $store);
+                $this->extra['Cache'] = [$driver, $store];
                 $this->interfaces['\Illuminate\Cache\StoreInterface'] = $store;
             }
         } catch (\Exception $e) {}
@@ -144,7 +144,7 @@ class Generator
             if (class_exists('Queue') && is_a('Queue', '\Illuminate\Support\Facades\Queue', true)) {
                 /** @noinspection PhpUndefinedClassInspection */
                 $class = get_class(\Queue::connection());
-                $this->extra['Queue'] = array($class);
+                $this->extra['Queue'] = [$class];
                 $this->interfaces['\Illuminate\Queue\QueueInterface'] = $class;
             }
         } catch (\Exception $e) {}
@@ -153,7 +153,7 @@ class Generator
             if (class_exists('SSH') && is_a('SSH', '\Illuminate\Support\Facades\SSH', true)) {
                 /** @noinspection PhpUndefinedClassInspection */
                 $class = get_class(\SSH::connection());
-                $this->extra['SSH'] = array($class);
+                $this->extra['SSH'] = [$class];
                 $this->interfaces['\Illuminate\Remote\ConnectionInterface'] = $class;
             }
         } catch (\Exception $e) {}
@@ -167,12 +167,12 @@ class Generator
      */
     protected function getNamespaces()
     {
-        $namespaces = array();
+        $namespaces = [];
 
         // Get all aliases
         /** @noinspection PhpUndefinedClassInspection */
         foreach (AliasLoader::getInstance()->getAliases() as $name => $facade) {
-            $magicMethods = array_key_exists($name, $this->magic) ? $this->magic[$name] : array();
+            $magicMethods = array_key_exists($name, $this->magic) ? $this->magic[$name] : [];
             $alias = new Alias($name, $facade, $magicMethods, $this->interfaces);
             if ($alias->isValid()) {
 
@@ -183,7 +183,7 @@ class Generator
 
                 $namespace = $alias->getNamespace();
                 if (!isset($namespaces[$namespace])) {
-                    $namespaces[$namespace] = array();
+                    $namespaces[$namespace] = [];
                 }
                 $namespaces[$namespace][] = $alias;
             }
@@ -213,7 +213,7 @@ class Generator
                 $driver = get_class(\Cache::driver());
                 /** @noinspection PhpUndefinedClassInspection */
                 $store = get_class(\Cache::getStore());
-                return array($driver, $store);
+                return [$driver, $store];
             } elseif ($alias == 'Queue') {
                 /** @noinspection PhpUndefinedClassInspection */
                 $driver = \Queue::connection();

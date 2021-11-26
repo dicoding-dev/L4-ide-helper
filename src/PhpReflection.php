@@ -49,10 +49,10 @@ class PhpReflection
      */
     public static function getUseStatements(\ReflectionClass $class)
     {
-        static $cache = array();
+        static $cache = [];
         if (!isset($cache[$name = $class->getName()])) {
             if ($class->isInternal() || !($code = @file_get_contents($class->getFileName()))) {
-                $cache[$name] = array();
+                $cache[$name] = [];
             } else {
                 $cache = self::parseUseStatements($code, $name) + $cache;
             }
@@ -66,7 +66,7 @@ class PhpReflection
      */
     public static function isBuiltinType($type)
     {
-        return in_array(strtolower($type), array('string', 'int', 'float', 'bool', 'array', 'callable'), true);
+        return in_array(strtolower($type), ['string', 'int', 'float', 'bool', 'array', 'callable'], true);
     }
 
     /**
@@ -80,14 +80,14 @@ class PhpReflection
     {
         $tokens = token_get_all($code);
         $namespace = $class = $classLevel = $level = null;
-        $res = $uses = array();
+        $res = $uses = [];
 
         while ($token = current($tokens)) {
             next($tokens);
             switch (is_array($token) ? $token[0] : $token) {
                 case T_NAMESPACE:
-                    $namespace = ltrim(self::fetch($tokens, array(T_STRING, T_NS_SEPARATOR)) . '\\', '\\');
-                    $uses = array();
+                    $namespace = ltrim(self::fetch($tokens, [T_STRING, T_NS_SEPARATOR]) . '\\', '\\');
+                    $uses = [];
                     break;
 
                 case T_CLASS:
@@ -104,10 +104,10 @@ class PhpReflection
                     break;
 
                 case T_USE:
-                    while (!$class && ($name = self::fetch($tokens, array(T_STRING, T_NS_SEPARATOR)))) {
+                    while (!$class && ($name = self::fetch($tokens, [T_STRING, T_NS_SEPARATOR]))) {
                         $name = ltrim($name, '\\');
                         if (self::fetch($tokens, '{')) {
-                            while ($suffix = self::fetch($tokens, array(T_STRING, T_NS_SEPARATOR))) {
+                            while ($suffix = self::fetch($tokens, [T_STRING, T_NS_SEPARATOR])) {
                                 if (self::fetch($tokens, T_AS)) {
                                     $uses[self::fetch($tokens, T_STRING)] = $name . $suffix;
                                 } else {
@@ -153,10 +153,10 @@ class PhpReflection
     {
         $res = null;
         while ($token = current($tokens)) {
-            list($token, $s) = is_array($token) ? $token : array($token, $token);
+            list($token, $s) = is_array($token) ? $token : [$token, $token];
             if (in_array($token, (array)$take, true)) {
                 $res .= $s;
-            } elseif (!in_array($token, array(T_DOC_COMMENT, T_WHITESPACE, T_COMMENT), true)) {
+            } elseif (!in_array($token, [T_DOC_COMMENT, T_WHITESPACE, T_COMMENT], true)) {
                 break;
             }
             next($tokens);

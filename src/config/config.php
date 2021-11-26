@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Config;
 
-return array(
+return [
 
     /*
     |--------------------------------------------------------------------------
@@ -28,9 +28,9 @@ return array(
 
     'include_helpers' => false,
 
-    'helper_files' => array(
+    'helper_files' => [
         base_path().'/vendor/laravel/framework/src/Illuminate/Support/helpers.php',
-    ),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -42,9 +42,9 @@ return array(
     |
     */
 
-    'model_locations' => array(
+    'model_locations' => [
         'app/models',
-    ),
+    ],
 
 
     /*
@@ -56,14 +56,14 @@ return array(
     |
     */
 
-    'extra' => array(
-        'Artisan' => array('Illuminate\Foundation\Artisan'),
-        'Eloquent' => array('Illuminate\Database\Eloquent\Builder', 'Illuminate\Database\Query\Builder'),
-        'Session' => array('Illuminate\Session\Store'),
-    ),
+    'extra' => [
+        'Artisan' => ['Illuminate\Foundation\Artisan'],
+        'Eloquent' => ['Illuminate\Database\Eloquent\Builder', 'Illuminate\Database\Query\Builder'],
+        'Session' => ['Illuminate\Session\Store'],
+    ],
 
-    'magic' => array(
-        'Log' => array(
+    'magic' => [
+        'Log' => [
             'debug'     => 'Monolog\Logger::addDebug',
             'info'      => 'Monolog\Logger::addInfo',
             'notice'    => 'Monolog\Logger::addNotice',
@@ -72,8 +72,8 @@ return array(
             'critical'  => 'Monolog\Logger::addCritical',
             'alert'     => 'Monolog\Logger::addAlert',
             'emergency' => 'Monolog\Logger::addEmergency',
-        )
-    ),
+        ]
+    ],
     
     /*
     |--------------------------------------------------------------------------
@@ -85,8 +85,8 @@ return array(
     |
     */
     
-    'interfaces' => array(
+    'interfaces' => [
         '\Illuminate\Auth\UserInterface' => Config::get('auth.model', 'User'),
-    )
+    ]
 
-);
+];

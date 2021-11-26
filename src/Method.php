@@ -25,9 +25,9 @@ class Method
 
     protected $name;
     protected $namespace;
-    protected $params = array();
-    protected $params_with_default = array();
-    protected $interfaces = array();
+    protected $params = [];
+    protected $params_with_default = [];
+    protected $interfaces = [];
     protected $return = null;
 
     /**
@@ -37,7 +37,7 @@ class Method
      * @param string|null $methodName
      * @param array $interfaces
      */
-    public function __construct(\ReflectionMethod $method, $alias, $class, $methodName = null, $interfaces = array())
+    public function __construct(\ReflectionMethod $method, $alias, $class, $methodName = null, $interfaces = [])
     {
         $this->method = $method;
         $this->interfaces = $interfaces;
@@ -97,7 +97,8 @@ class Method
         $serializer = new DocBlock\Serializer(1, $prefix);
         $str = $serializer->getDocComment($this->phpdoc);
         if ($trim) {
-            $str = preg_replace(array('/\s+$/m', '#^(\s*/\*\*[\r\n])(?:\s*\*[\r\n])+#u', '#(?:[\r\n]\s*\*)+([\r\n]\s*\*/)$#u'), array('', '$1', '$1'), $str);
+            $str = preg_replace(
+                ['/\s+$/m', '#^(\s*/\*\*[\r\n])(?:\s*\*[\r\n])+#u', '#(?:[\r\n]\s*\*)+([\r\n]\s*\*/)$#u'], ['', '$1', '$1'], $str);
         }
         return $str;
     }
@@ -263,8 +264,8 @@ class Method
     public function getParameters($method)
     {
         //Loop through the default values for parameters, and make the correct output string
-        $params = array();
-        $paramsWithDefault = array();
+        $params = [];
+        $paramsWithDefault = [];
 
         foreach ($method->getParameters() as $param) {
             $paramStr = '$' . $param->getName();
@@ -326,7 +327,7 @@ class Method
         try {
             return PhpReflection::getUseStatements($class);
         } catch (\Exception $e) {
-            return array();
+            return [];
         }
     }
 }
