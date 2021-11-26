@@ -40,21 +40,15 @@ class IdeHelperServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app['command.ide-helper.generate'] = $this->app->share(
-            function ($app) {
-                return new GeneratorCommand($app['config'], $app['files'], $app['view']);
-            }
+            fn ($app) => new GeneratorCommand($app['config'], $app['files'], $app['view'])
         );
 
         $this->app['command.ide-helper.models'] = $this->app->share(
-            function ($app) {
-                return new ModelsCommand($app);
-            }
+            fn ($app) => new ModelsCommand($app)
         );
 
         $this->app['command.ide-helper.meta'] = $this->app->share(
-            function ($app) {
-                return new MetaCommand($app);
-            }
+            fn ($app) => new MetaCommand($app)
         );
 
         $this->commands('command.ide-helper.generate', 'command.ide-helper.models', 'command.ide-helper.meta');
