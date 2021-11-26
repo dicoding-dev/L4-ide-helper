@@ -1,83 +1,141 @@
-<?php namespace Barryvdh\LaravelIdeHelper;
+<?php
 
-class ServiceProviderTest extends \PHPUnit_Framework_TestCase
+use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
+use Illuminate\Config\Repository;
+use Illuminate\Container\Container;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\View\Factory;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+
+class ServiceProviderTest extends TestCase
 {
-	/** @var \PHPUnit_Framework_MockObject_MockObject|\Illuminate\Container\Container */
-	protected $app;
-	/** @var IdeHelperServiceProvider */
-	protected $provider;
+    /** @var MockObject|Container */
+    protected $app;
+    protected IdeHelperServiceProvider $provider;
 
-	static function makeAppMock(\PHPUnit_Framework_TestCase $testCase)
-	{
-		$app = $testCase->getMock('Illuminate\Container\Container', array('make', 'bind'));
+    public static function makeAppMock(TestCase $testCase)
+    {
+        $app = $testCase->getMockBuilder(Container::class)
+            ->onlyMethods(['make', 'bind'])
+            ->getMock();
+        $fs = new Filesystem();
+        $config = $testCase->getMockBuilder(Repository::class)
+            ->onlyMethods(['get', 'set', 'package'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $events = $testCase->getMockBuilder(Dispatcher::class)
+            ->onlyMethods(['listen'])
+            ->setConstructorArgs([$app])
+            ->getMock();
+        $view = $testCase->getMockBuilder(Factory::class)
+            ->onlyMethods(['addNamespace'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
-		$fs = $testCase->getMock('Illuminate\Filesystem\Filesystem', null);
-		$config = $testCase->getMock('Illuminate\Config\Repository', array('get', 'set', 'package'), array(), '', false);
-		$events = $testCase->getMock('Illuminate\Events\Dispatcher', array('listen'), array($app));
-		$view = $testCase->getMock('Illuminate\View\Factory', array('addNamespace'), array(), '', false);
+        $app->expects($testCase::any())->method('make')->willReturnMap([
+            ['files', [], $fs],
+            ['config', [], $config],
+            ['events', [], $events],
+            ['view', [], $view],
+            ['path', [], __DIR__],
+        ]);
 
-		$app->expects($testCase->any())->method('make')->willReturnMap(array(
-			array('files', array(), $fs),
-			array('config', array(), $config),
-			array('events', array(), $events),
-			array('view', array(), $view),
-			array('path', array(), __DIR__),
-		));
+        return $app;
+    }
 
-		return $app;
-	}
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function setUp()
-	{
-		$this->app = static::makeAppMock($this);
-		/** @noinspection PhpParamsInspection */
-		$this->provider = new IdeHelperServiceProvider($this->app);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->app = static::makeAppMock($this);
+        $this->provider = new IdeHelperServiceProvider($this->app);
+    }
 
-	public function testDeferred()
-	{
-		$this->assertTrue($this->provider->isDeferred());
-	}
+    public function testDeferred()
+    {
+        static::assertTrue($this->provider->isDeferred());
+    }
 
-	public function testProvides()
-	{
-		$this->assertEquals(array('command.ide-helper.generate', 'command.ide-helper.models', 'command.ide-helper.meta'), $this->provider->provides());
-	}
+    public function testProvides()
+    {
+        static::assertEquals(
+            ['command.ide-helper.generate', 'command.ide-helper.models', 'command.ide-helper.meta'],
+            $this->provider->provides()
+        );
+    }
 
-	public function testRegister()
-	{
-		$this->app->expects($this->exactly(3))->method('bind')->withConsecutive(
-			array('command.ide-helper.generate', $this->isType(\PHPUnit_Framework_Constraint_IsType::TYPE_CALLABLE), $this->isFalse()),
-			array('command.ide-helper.models', $this->isType(\PHPUnit_Framework_Constraint_IsType::TYPE_CALLABLE), $this->isFalse()),
-			array('command.ide-helper.meta', $this->isType(\PHPUnit_Framework_Constraint_IsType::TYPE_CALLABLE), $this->isFalse())
-		);
+    public function testRegister()
+    {
+        $this->app->expects(static::exactly(3))->method('bind')->withConsecutive(
+            [
+                'command.ide-helper.generate',
+                static::isType('callable'),
+                static::isFalse()
+            ],
+            [
+                'command.ide-helper.models',
+                static::isType('callable'),
+                static::isFalse()
+            ],
+            [
+                'command.ide-helper.meta',
+                static::isType('callable'),
+                static::isFalse()
+            ]
+        );
 
-		/** @var \PHPUnit_Framework_MockObject_MockObject|\Illuminate\Events\Dispatcher $events */
-		$events = $this->app['events'];
-		$events->expects($this->once())->method('listen')->with('artisan.start', $this->callback(function ($listener) {
-			$params = print_r(array('commands' => array('command.ide-helper.generate', 'command.ide-helper.models', 'command.ide-helper.meta')), true);
-			return strpos(preg_replace('/^\s+/mu', '', print_r($listener, true)), preg_replace('/^\s+/mu', '', $params));
-		}), 0);
+        /** @var MockObject|Dispatcher $events */
+        $events = $this->app['events'];
+        $events->expects(static::once())->method('listen')->with(
+            'artisan.start',
+            static::callback(function ($listener) {
+                $params = print_r(
+                    [
+                        'commands' => [
+                            'command.ide-helper.generate',
+                            'command.ide-helper.models',
+                            'command.ide-helper.meta'
+                        ]
+                    ],
+                    true
+                );
+                return strpos(
+                    preg_replace('/^\s+/mu', '', print_r($listener, true)),
+                    preg_replace('/^\s+/mu', '', $params)
+                ) !== false;
+            }),
+            0
+        );
 
-		$this->provider->register();
-	}
+        $this->provider->register();
+    }
 
-	public function testBoot()
-	{
-		$path = realpath(__DIR__ . '/../src');
+    public function testBoot()
+    {
+        $path = realpath(__DIR__ . '/../src');
 
-		/** @var \PHPUnit_Framework_MockObject_MockObject|\Illuminate\Config\Repository $config */
-		$config = $this->app['config'];
-		$config->expects($this->once())->method('package')->with('barryvdh/laravel-ide-helper', $path . '/config', 'laravel-ide-helper');
+        /** @var MockObject|Repository $config */
+        $config = $this->app['config'];
+        $config->expects(static::once())->method('package')->with(
+            'barryvdh/laravel-ide-helper',
+            $path . '/config',
+            'laravel-ide-helper'
+        );
 
-		/** @var \PHPUnit_Framework_MockObject_MockObject|\Illuminate\View\Factory $view */
-		$view = $this->app['view'];
-		$view->expects($this->once())->method('addNamespace')->with('laravel-ide-helper', $path . '/views');
+        /** @var MockObject|Factory $view */
+        $view = $this->app['view'];
+        $view->expects(static::once())->method('addNamespace')->with(
+            'laravel-ide-helper',
+            $path . '/views'
+        );
 
-		$this->provider->boot();
-	}
+        $this->provider->boot();
+    }
 
 }
+

@@ -1,38 +1,58 @@
-<?php namespace Barryvdh\LaravelIdeHelper;
+<?php
 
-class MethodTest extends \PHPUnit_Framework_TestCase
+use Barryvdh\LaravelIdeHelper\Method;
+use PHPUnit\Framework\TestCase;
+
+class MethodTest extends TestCase
 {
-	/**
-	 * @expectedException \PHPUnit_Framework_Error
-	 * @expectedExceptionMessage Argument 1 passed to
-	 */
-	public function testConstructorWithoutMethod()
-	{
-		new Method(null, null, null);
-	}
+    /**
+     * Test that we can actually instantiate the class
+     */
+    public function testCanInstantiate()
+    {
+        $reflectionClass = new \ReflectionClass(ExampleClass::class);
+        $reflectionMethod = $reflectionClass->getMethod('setName');
 
-	public function testConstructor()
-	{
-		$method = new \ReflectionMethod('PHPUnit_Framework_TestCase', 'getMock');
-		$object = new Method($method, null, new \ReflectionClass(get_class($this)));
+        $method = new Method($reflectionMethod, 'Example', $reflectionClass);
 
-		$this->assertSame('\PHPUnit_Framework_TestCase', $object->getDeclaringClass());
-		$this->assertSame('\\' . get_class($this), $object->getRoot());
-		$this->assertSame('getMock', $object->getName());
+        static::assertInstanceOf(Method::class, $method);
+    }
 
-		$prop = new \ReflectionProperty(get_class($object), 'namespace');
-		$prop->setAccessible(true);
-		$this->assertSame('', $prop->getValue($object));
+    /**
+     * Test the output of a class
+     */
+    public function testOutput()
+    {
+        $reflectionClass = new \ReflectionClass(ExampleClass::class);
+        $reflectionMethod = $reflectionClass->getMethod('setName');
 
-		$this->assertFalse($object->isDeprecated());
-		$this->assertCount($method->getNumberOfParameters(), $object->getDocParams());
+        $method = new Method($reflectionMethod, 'Example', $reflectionClass);
 
-		$doc = $object->getDocComment('', true);
-		$this->assertContains("\n * " . '@param array|null $methods', $doc);
-		$this->assertContains("\n * " . '@return \PHPUnit_Framework_MockObject_MockObject', $doc);
-		$this->assertContains("\n * " . '@throws \PHPUnit_Framework_Exception', $doc);
+        $output = '/**
+ * 
+ *
+ * @param string $last 
+ * @param string $first 
+ */';
+        static::assertEquals($output, $method->getDocComment(''));
+        static::assertEquals('setName', $method->getName());
+        static::assertEquals('\\'.ExampleClass::class, $method->getDeclaringClass());
+        static::assertEquals('$last, $first', $method->getParams(true));
+        static::assertEquals(['$last', '$first'], $method->getParams(false));
+        static::assertEquals('$last, $first = \'Barry\'', $method->getParamsWithDefault(true));
+        static::assertEquals(['$last', '$first = \'Barry\''], $method->getParamsWithDefault(false));
+        static::assertEquals(true, $method->shouldReturn());
+    }
+}
 
-		$this->assertTrue($object->shouldReturn());
-	}
-
+class ExampleClass
+{
+    /**
+     * @param string $last
+     * @param string $first
+     */
+    public function setName($last, $first = 'Barry')
+    {
+        return;
+    }
 }
