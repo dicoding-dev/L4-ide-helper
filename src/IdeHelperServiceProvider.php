@@ -59,7 +59,7 @@ class IdeHelperServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return array('command.ide-helper.generate', 'command.ide-helper.models', 'command.ide-helper.meta');
+        return ['command.ide-helper.generate', 'command.ide-helper.models', 'command.ide-helper.meta'];
     }
 
     /**
