@@ -36,13 +36,13 @@ class GeneratorCommand extends Command
     protected $description = 'Generate a new IDE Helper file.';
 
     /** @var \Illuminate\Config\Repository */
-    protected $config;
+    protected ConfigRepository $config;
 
     /** @var \Illuminate\Filesystem\Filesystem */
-    protected $files;
+    protected Filesystem $files;
 
     /** @var \Illuminate\View\Factory */
-    protected $view;
+    protected \Illuminate\View\Factory $view;
 
     protected $onlyExtend;
 

@@ -25,7 +25,7 @@ class MetaCommand extends Command {
      * {@inheritdoc}
      */
     protected $name = 'ide-helper:meta';
-    protected $filename = '.phpstorm.meta.php';
+    protected string $filename = '.phpstorm.meta.php';
 
     /**
      * {@inheritdoc}
@@ -38,7 +38,7 @@ class MetaCommand extends Command {
     /** @var \Illuminate\View\Factory */
     protected $view;
 
-    protected $methods = [
+    protected array $methods = [
         //'\Illuminate\Foundation\Application::make',
         'new \Illuminate\Container\Container',
         '\Illuminate\Container\Container::make',
@@ -73,8 +73,9 @@ class MetaCommand extends Command {
         }
 
         foreach ($this->getAbstracts() as $abstract) {
-            if (!empty($exclude) && preg_match($exclude, $abstract))
+            if (!empty($exclude) && preg_match($exclude, $abstract)) {
                 continue;
+            }
 
             try {
                 $concrete = $this->laravel->make($abstract);

@@ -12,28 +12,24 @@ namespace Barryvdh\LaravelIdeHelper;
 
 use /** @noinspection PhpUndefinedNamespaceInspection,PhpUndefinedClassInspection */Illuminate\Foundation\AliasLoader;
 use Illuminate\Config\Repository as ConfigRepository;
+use Illuminate\View\Factory;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Generator
 {
-    /** @var \Illuminate\Config\Repository */
-    protected $config;
+    protected ConfigRepository $config;
+    protected Factory $view;
+    protected OutputInterface $output;
 
-    /** @var \Illuminate\View\Factory */
-    protected $view;
-
-    /** @var \Symfony\Component\Console\Output\OutputInterface */
-    protected $output;
-
-    protected $extra = [];
-    protected $magic = [];
-    protected $interfaces = [];
-    protected $helpers;
+    protected array $extra = [];
+    protected array $magic = [];
+    protected array $interfaces = [];
+    protected string $helpers;
 
     /**
      * @param \Illuminate\Config\Repository $config
-     * @param \Illuminate\View\Factory $view
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param Factory $view
+     * @param OutputInterface|null $output
      * @param string $helpers
      */
     public function __construct(ConfigRepository $config, $view, OutputInterface $output = null, $helpers = '')

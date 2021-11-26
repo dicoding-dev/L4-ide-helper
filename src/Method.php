@@ -12,32 +12,30 @@ namespace Barryvdh\LaravelIdeHelper;
 
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlock\Context;
-use phpDocumentor\Reflection\DocBlock\Tag;
 use phpDocumentor\Reflection\DocBlock\Tag\ReturnTag;
+use ReflectionClass;
+use ReflectionMethod;
 
 class Method
 {
-    /** @var \phpDocumentor\Reflection\DocBlock */
-    protected $phpdoc;
+    protected DocBlock $phpdoc;
+    protected ReflectionMethod $method;
 
-    /** @var \ReflectionMethod */
-    protected $method;
-
-    protected $name;
-    protected $namespace;
-    protected $params = [];
-    protected $params_with_default = [];
-    protected $interfaces = [];
-    protected $return = null;
+    protected string $name;
+    protected string $namespace;
+    protected array $params = [];
+    protected array $params_with_default = [];
+    protected array $interfaces = [];
+    protected ?string $return = null;
 
     /**
-     * @param \ReflectionMethod $method
+     * @param ReflectionMethod $method
      * @param string $alias
-     * @param \ReflectionClass $class
+     * @param ReflectionClass $class
      * @param string|null $methodName
      * @param array $interfaces
      */
-    public function __construct(\ReflectionMethod $method, $alias, $class, $methodName = null, $interfaces = [])
+    public function __construct(ReflectionMethod $method, $alias, $class, $methodName = null, $interfaces = [])
     {
         $this->method = $method;
         $this->interfaces = $interfaces;
@@ -231,12 +229,15 @@ class Method
     {
         $types = explode('|', $string);
         foreach ($types as &$type) {
-            if ($type === 'Closure')
+            if ($type === 'Closure') {
                 $type = '\Closure';
-            elseif ($type === 'dynamic')
+            }
+            elseif ($type === 'dynamic') {
                 $type = 'mixed';
-            elseif (strrpos($type, '\\') && $type[0] !== '\\' && (class_exists($type) || interface_exists($type)))
+            }
+            elseif (strrpos($type, '\\') && $type[0] !== '\\' && (class_exists($type) || interface_exists($type))) {
                 $type = '\\' . $type;
+            }
         }
         return implode('|', $types);
     }
@@ -258,7 +259,7 @@ class Method
     /**
      * Get the parameters and format them correctly
      *
-     * @param \ReflectionMethod $method
+     * @param ReflectionMethod $method
      * @return void
      */
     public function getParameters($method)
@@ -295,7 +296,7 @@ class Method
     }
 
     /**
-     * @param \ReflectionMethod $reflectionMethod
+     * @param ReflectionMethod $reflectionMethod
      * @return DocBlock|null
      */
     protected function getInheritDoc($reflectionMethod)
@@ -322,7 +323,7 @@ class Method
         return null;
     }
 
-    protected static function getUseStatements(\ReflectionClass $class)
+    protected static function getUseStatements(ReflectionClass $class)
     {
         try {
             return PhpReflection::getUseStatements($class);

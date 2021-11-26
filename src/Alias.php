@@ -12,19 +12,19 @@ namespace Barryvdh\LaravelIdeHelper;
 
 class Alias
 {
-    protected $alias;
-    protected $facade;
-    protected $extends = null;
-    protected $classType = 'class';
-    protected $short;
-    protected $namespace = '__root';
-    protected $root = null;
-    protected $classes = [];
-    protected $methods = [];
-    protected $usedMethods = [];
-    protected $valid = false;
-    protected $magicMethods = [];
-    protected $interfaces = [];
+    protected string $alias;
+    protected string $facade;
+    protected ?string $extends = null;
+    protected string $classType = 'class';
+    protected string $short;
+    protected string $namespace = '__root';
+    protected ?string $root = null;
+    protected array $classes = [];
+    protected array $methods = [];
+    protected array $usedMethods = [];
+    protected bool $valid = false;
+    protected array $magicMethods = [];
+    protected array $interfaces = [];
 
     /**
      * @param string $alias

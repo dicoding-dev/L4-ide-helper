@@ -32,17 +32,17 @@ class ModelsCommand extends Command
      * {@inheritdoc}
      */
     protected $name = 'ide-helper:models';
-    protected $filename = '_ide_helper_models.php';
+    protected string $filename = '_ide_helper_models.php';
 
     /**
      * {@inheritdoc}
      */
     protected $description = 'Generate autocompletion for models';
 
-    protected $properties = [];
-    protected $methods = [];
-    protected $write = false;
-    protected $dirs = [];
+    protected array $properties = [];
+    protected array $methods = [];
+    protected bool $write = false;
+    protected array $dirs = [];
     protected $reset;
 
     /** @var \Illuminate\Filesystem\Filesystem */
