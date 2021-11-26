@@ -10,13 +10,14 @@
 
 namespace Barryvdh\LaravelIdeHelper;
 
+use Illuminate\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Barryvdh\LaravelIdeHelper\Console\MetaCommand;
 use Barryvdh\LaravelIdeHelper\Console\ModelsCommand;
 use Barryvdh\LaravelIdeHelper\Console\GeneratorCommand;
 
 /**
- * @property \Illuminate\Container\Container $app
+ * @property Container $app
  */
 class IdeHelperServiceProvider extends ServiceProvider
 {
