@@ -10,9 +10,9 @@
 
 namespace Barryvdh\LaravelIdeHelper;
 
-use phpDocumentor\Reflection\DocBlock;
-use phpDocumentor\Reflection\DocBlock\Context;
-use phpDocumentor\Reflection\DocBlock\Tag\ReturnTag;
+use Barryvdh\Reflection\DocBlock;
+use Barryvdh\Reflection\DocBlock\Context;
+use Barryvdh\Reflection\DocBlock\Tag\ReturnTag;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -189,7 +189,7 @@ class Method
     {
         static $typeProp;
         if (!isset($typeProp)) {
-            $typeProp = new \ReflectionProperty('phpDocumentor\Reflection\DocBlock\Tag\ReturnTag', 'type');
+            $typeProp = new \ReflectionProperty('Barryvdh\Reflection\DocBlock\Tag\ReturnTag', 'type');
             $typeProp->setAccessible(true);
         }
 

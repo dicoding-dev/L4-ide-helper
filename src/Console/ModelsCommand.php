@@ -15,9 +15,9 @@ use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\ClassLoader\ClassMapGenerator;
-use phpDocumentor\Reflection\DocBlock;
-use phpDocumentor\Reflection\DocBlock\Context;
-use phpDocumentor\Reflection\DocBlock\Tag;
+use Barryvdh\Reflection\DocBlock;
+use Barryvdh\Reflection\DocBlock\Context;
+use Barryvdh\Reflection\DocBlock\Tag;
 
 /**
  * A command to generate autocomplete information for your IDE
